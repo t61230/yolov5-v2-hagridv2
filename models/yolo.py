@@ -22,7 +22,6 @@ class Detect(nn.Module):
     # 注意，只有使用 models/export.py 导出onnx的时候才需要做这个修改，导出后需要将其改回。
     def __forward__(self, x):
         return [self.m[i](x[i]).permute(0,2,3,1).contiguous() for i in range(self.nl)]
-
     def forward(self, x):
         # x = x.copy()  # for profiling
         z = []  # inference output

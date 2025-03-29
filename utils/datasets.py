@@ -326,13 +326,45 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         self.stride = stride
 
         # Define labels
-        self.label_files = [x.replace('images', 'labels').replace(os.path.splitext(x)[-1], '.txt') for x in
-                            self.img_files]
+        #self.label_files = [x.replace('images', 'labels').replace(os.path.splitext(x)[-1], '.txt') for x in
+        #                    self.img_files]
+        # 修改LoadImagesAndLabels类中的标签路径生成部分
+        self.label_files = []
+        for img_path in self.img_files:
+            # 使用pathlib处理路径
+            img_path = Path(img_path)
+            parts = list(img_path.parts)  # 将路径拆解为元组
+
+            # 定位并替换父目录名称
+            if "train" in parts:
+                idx = parts.index("train")
+                parts[idx] = "train_labels"
+                # 移除紧接的"images"目录（如果存在）
+                if idx+1 < len(parts) and parts[idx+1] == "images":
+                    parts.pop(idx+1)
+            elif "test" in parts:
+                idx = parts.index("test")
+                parts[idx] = "test_labels"
+                if idx+1 < len(parts) and parts[idx+1] == "images":
+                    parts.pop(idx+1)
+            elif "val" in parts:
+                idx = parts.index("val")
+                parts[idx] = "val_labels"
+                if idx+1 < len(parts) and parts[idx+1] == "images":
+                    parts.pop(idx+1)
+
+            # 重建路径并修改扩展名
+            label_path = Path(*parts).with_suffix('.txt')
+            self.label_files.append(str(label_path))
 
         # Check cache
-        cache_path = str(Path(self.label_files[0]).parent) + '.cache'  # cached labels
+        # cache_path = str(Path(self.label_files[0]).parent) + '.cache'  # cached labels
+        # 新代码：直接基于图片路径获取数据集根目录
+        img_path = Path(self.img_files[0])
+        dataset_root = img_path.parent.parent.parent  # 可能需要根据实际路径调整.parent次数
+        cache_path = str(dataset_root / 'train_labels.cache')
         if os.path.isfile(cache_path):
-            cache = torch.load(cache_path)  # load
+            cache = torch.load(cache_path, weights_only=False)  # load
             if cache['hash'] != get_hash(self.label_files + self.img_files):  # dataset changed
                 cache = self.cache_labels(cache_path)  # re-cache
         else:

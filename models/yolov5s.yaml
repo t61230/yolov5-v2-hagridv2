@@ -1,6 +1,5 @@
 # parameters
-# DLS 训练的时候要同步修改此处，数据集中的 nc 和这个地方都要同步修改
-nc: 2  # number of classes
+nc: 34  # number of classes
 depth_multiple: 0.33  # model depth multiple
 width_multiple: 0.50  # layer channel multiple
 
