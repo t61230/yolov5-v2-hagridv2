@@ -9,4 +9,8 @@
 
 python train.py --img 672 --batch-size 8 --data coco.yaml --cfg yolov5s.yaml --weights ''  --device 0 --epochs 3
 
+# 继续基于exp5训练
+
+# python train.py --img 672 --batch-size 8 --data coco.yaml --cfg yolov5s.yaml --weights 'runs/exp5/weights/last.pt'  --device 0 --epochs 3
+
 # 训练卡住了就重开，常有的事情，可以使用之前训练的权重结果充当下一轮训练的起点。
